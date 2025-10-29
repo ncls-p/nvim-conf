@@ -99,10 +99,13 @@ now_if_args(function()
   
   -- Enable additional language servers
   vim.lsp.enable({
-    'eslint',      -- JavaScript/TypeScript linting
-    'jsonls',      -- JSON language server (package.json support)
-    'tailwindcss', -- Tailwind CSS IntelliSense
-    'vtsls',       -- TypeScript/JavaScript language server
+    'basedpyright', -- Python language server
+    'eslint',       -- JavaScript/TypeScript linting
+    'jsonls',       -- JSON language server (package.json support)
+    'lua_ls',       -- Lua language server
+    'ruff',         -- Python linter and formatter
+    'tailwindcss',  -- Tailwind CSS IntelliSense
+    'vtsls',        -- TypeScript/JavaScript language server
   })
 end)
 
@@ -124,8 +127,25 @@ later(function()
   require('conform').setup({
     -- Map of filetype to formatters
     -- Make sure that necessary CLI tool is available
-    -- formatters_by_ft = { lua = { 'stylua' } },
+    formatters_by_ft = {
+      lua = { 'stylua' },
+      python = { 'ruff_format', 'ruff_organize_imports' },
+    },
+    -- Format on save by default, but respect disable flag
+    format_on_save = function(bufnr)
+      if vim.b[bufnr].disable_autoformat then
+        return
+      end
+      return { timeout_ms = 500, lsp_format = 'fallback' }
+    end,
   })
+  
+  -- Command to save without formatting
+  vim.api.nvim_create_user_command('W', function()
+    vim.b.disable_autoformat = true
+    vim.cmd('write')
+    vim.b.disable_autoformat = false
+  end, { desc = 'Write without formatting' })
 end)
 
 -- Snippets ===================================================================
