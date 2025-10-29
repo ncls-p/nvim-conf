@@ -28,19 +28,44 @@ local now, later = MiniDeps.now, MiniDeps.later
 local now_if_args = _G.Config.now_if_args
 
 -- Step one ===================================================================
--- Enable 'miniwinter' color scheme. It comes with 'mini.nvim' and uses 'mini.hues'.
+-- Enable color scheme with persistence
 --
 -- See also:
 -- - `:h mini.nvim-color-schemes` - list of other color schemes
 -- - `:h MiniHues-examples` - how to define highlighting with 'mini.hues'
 -- - 'plugin/40_plugins.lua' honorable mentions - other good color schemes
-now(function() vim.cmd('colorscheme miniwinter') end)
+now(function()
+  local theme_file = vim.fn.stdpath('data') .. '/theme.txt'
+  local default_theme = 'miniwinter'
+  
+  -- Load saved theme or use default
+  local saved_theme = default_theme
+  local f = io.open(theme_file, 'r')
+  if f then
+    saved_theme = f:read('*line') or default_theme
+    f:close()
+  end
+  
+  vim.cmd('colorscheme ' .. saved_theme)
+  
+  -- Auto-save theme on change
+  vim.api.nvim_create_autocmd('ColorScheme', {
+    callback = function()
+      local current = vim.g.colors_name
+      if current then
+        local file = io.open(theme_file, 'w')
+        if file then
+          file:write(current)
+          file:close()
+        end
+      end
+    end,
+  })
+end)
 
--- You can try these other 'mini.hues'-based color schemes (uncomment with `gcc`):
--- now(function() vim.cmd('colorscheme minispring') end)
--- now(function() vim.cmd('colorscheme minisummer') end)
--- now(function() vim.cmd('colorscheme miniautumn') end)
--- now(function() vim.cmd('colorscheme randomhue') end)
+-- Available 'mini.hues'-based color schemes:
+-- miniwinter, minispring, minisummer, miniautumn, randomhue
+-- Change with: :colorscheme <name>
 
 -- Common configuration presets. Example usage:
 -- - `<C-s>` in Insert mode - save and go to Normal mode

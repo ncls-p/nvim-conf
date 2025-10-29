@@ -97,9 +97,13 @@ now_if_args(function()
   -- Enable Copilot LSP for sidekick.nvim NES
   vim.lsp.enable('copilot')
   
-  -- vim.lsp.enable({
-  --   -- For example, if `lua-language-server` is installed, use `'lua_ls'` entry
-  -- })
+  -- Enable additional language servers
+  vim.lsp.enable({
+    'eslint',      -- JavaScript/TypeScript linting
+    'jsonls',      -- JSON language server (package.json support)
+    'tailwindcss', -- Tailwind CSS IntelliSense
+    'vtsls',       -- TypeScript/JavaScript language server
+  })
 end)
 
 -- Formatting =================================================================
@@ -153,15 +157,17 @@ later(function() add('rafamadriz/friendly-snippets') end)
 -- Beautiful, usable, well maintained color schemes outside of 'mini.nvim' and
 -- have full support of its highlight groups. Use if you don't like 'miniwinter'
 -- enabled in 'plugin/30_mini.lua' or other suggested 'mini.hues' based ones.
--- MiniDeps.now(function()
---   -- Install only those that you need
---   add('sainnhe/everforest')
---   add('Shatur/neovim-ayu')
---   add('ellisonleao/gruvbox.nvim')
---
---   -- Enable only one
---   vim.cmd('color everforest')
--- end)
+MiniDeps.now(function()
+  -- Suggested themes
+  add('sainnhe/everforest')
+  add('Shatur/neovim-ayu')
+  add('ellisonleao/gruvbox.nvim')
+  
+  -- Popular additional themes
+  add('folke/tokyonight.nvim')
+  add('catppuccin/nvim')
+  add('rebelot/kanagawa.nvim')
+end)
 
 -- Copilot ===================================================================
 
