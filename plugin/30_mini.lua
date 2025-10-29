@@ -285,6 +285,11 @@ later(function()
       -- - Stop submode either by `<Esc>` or by any key that is not in submode.
       miniclue.gen_clues.windows({ submode_resize = true }),
       miniclue.gen_clues.z(),
+      -- Sidekick AI commands group
+      { mode = 'n', keys = 'a', desc = '+AI' },
+      { mode = 'x', keys = 'a', desc = '+AI' },
+      { mode = 't', keys = 'a', desc = '+AI' },
+      { mode = 'i', keys = 'a', desc = '+AI' },
     },
     -- Explicitly opt-in for set of common keys to trigger clue window
     triggers = {
@@ -309,6 +314,10 @@ later(function()
       { mode = 'n', keys = '<C-w>' },    -- Window commands
       { mode = 'n', keys = 'z' },        -- `z` key
       { mode = 'x', keys = 'z' },
+      { mode = 'n', keys = 'a' },        -- Sidekick AI commands
+      { mode = 'x', keys = 'a' },
+      { mode = 't', keys = 'a' },
+      { mode = 'i', keys = 'a' },
     },
   })
 end)

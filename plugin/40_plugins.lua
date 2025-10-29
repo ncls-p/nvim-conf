@@ -93,6 +93,10 @@ now_if_args(function()
   -- the rules provided by 'nvim-lspconfig'.
   -- Use `:h vim.lsp.config()` or 'ftplugin/lsp/' directory to configure servers.
   -- Uncomment and tweak the following `vim.lsp.enable()` call to enable servers.
+  
+  -- Enable Copilot LSP for sidekick.nvim NES
+  vim.lsp.enable('copilot')
+  
   -- vim.lsp.enable({
   --   -- For example, if `lua-language-server` is installed, use `'lua_ls'` entry
   -- })
@@ -158,3 +162,115 @@ later(function() add('rafamadriz/friendly-snippets') end)
 --   -- Enable only one
 --   vim.cmd('color everforest')
 -- end)
+
+-- Copilot ===================================================================
+
+-- GitHub Copilot with LSP (required for sidekick.nvim NES)
+-- Using copilot.lua which bundles the copilot-language-server
+MiniDeps.now(function()
+  add({
+    source = 'zbirenbaum/copilot.lua',
+  })
+  
+  require('copilot').setup({
+    suggestion = { enabled = true }, -- Active les suggestions inline de copilot.lua
+    panel = { enabled = false },
+    suggestion = {
+      enabled = true,
+      auto_trigger = true,
+      keymap = {
+        accept = "<Tab>",
+        accept_word = "<C-Right>",
+        accept_line = false,
+        next = "<M-]>",
+        prev = "<M-[>",
+        dismiss = "<C-e>",
+      },
+    },
+  })
+end)
+
+-- Sidekick ===================================================================
+
+-- AI assistant for Neovim with Next Edit Suggestions
+-- Documentation: https://github.com/folke/sidekick.nvim
+MiniDeps.now(function()
+  add('folke/sidekick.nvim')
+  require('sidekick').setup({
+    -- Configuration minimale selon la doc
+    -- NES est activé par défaut avec les bons événements
+  })
+  
+  -- Keymaps recommandés par la documentation
+  -- Toggle CLI
+  vim.keymap.set({'n', 't', 'i', 'x'}, 'aa', function()
+    require('sidekick.cli').toggle()
+  end, { desc = 'Sidekick Toggle CLI' })
+  
+  -- Select CLI tool
+  vim.keymap.set('n', 'as', function()
+    require('sidekick.cli').select()
+  end, { desc = 'Select CLI' })
+  
+  -- Close/detach CLI
+  vim.keymap.set('n', 'ad', function()
+    require('sidekick.cli').close()
+  end, { desc = 'Detach a CLI Session' })
+  
+  -- Send visual selection or this
+  vim.keymap.set({'x', 'n'}, 'at', function()
+    require('sidekick.cli').send({ msg = '{this}' })
+  end, { desc = 'Send This' })
+  
+  -- Send file
+  vim.keymap.set('n', 'af', function()
+    require('sidekick.cli').send({ msg = '{file}' })
+  end, { desc = 'Send File' })
+  
+  -- Send visual selection
+  vim.keymap.set('x', 'av', function()
+    require('sidekick.cli').send({ msg = '{selection}' })
+  end, { desc = 'Send Visual Selection' })
+  
+  -- Select prompt
+  vim.keymap.set({'n', 'x'}, 'ap', function()
+    require('sidekick.cli').prompt()
+  end, { desc = 'Sidekick Select Prompt' })
+  
+  -- Tab to jump or apply NES + inline completions
+  vim.keymap.set({'i', 'n'}, '<Tab>', function()
+    -- Si on est en mode insertion, gérer les inline completions d'abord
+    if vim.fn.mode() == 'i' then
+      if vim.lsp.inline_completion.get() then
+        vim.lsp.inline_completion.accept()
+        return
+      end
+    end
+    
+    -- Ensuite, essayer les NES (Next Edit Suggestions)
+    if require('sidekick').nes_jump_or_apply() then
+      return
+    end
+    
+    -- Fallback vers Tab normal
+    return '<Tab>'
+  end, { expr = true, desc = 'Accept Completion or Goto/Apply NES' })
+  
+  -- Ctrl+Right pour accepter partiellement (mot par mot) les inline completions
+  vim.keymap.set('i', '<C-Right>', function()
+    if vim.lsp.inline_completion.get() then
+      vim.lsp.inline_completion.accept_line()
+    else
+      return '<C-Right>'
+    end
+  end, { expr = true, desc = 'Accept Line of Inline Completion' })
+  
+  -- Ctrl+E pour rejeter les inline completions
+  vim.keymap.set('i', '<C-e>', function()
+    if vim.lsp.inline_completion.get() then
+      vim.lsp.inline_completion.discard()
+    else
+      return '<C-e>'
+    end
+  end, { expr = true, desc = 'Discard Inline Completion' })
+end)
