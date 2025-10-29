@@ -34,7 +34,7 @@ local now_if_args = _G.Config.now_if_args
 -- - `:h mini.nvim-color-schemes` - list of other color schemes
 -- - `:h MiniHues-examples` - how to define highlighting with 'mini.hues'
 -- - 'plugin/40_plugins.lua' honorable mentions - other good color schemes
-now(function()
+later(function()
   local theme_file = vim.fn.stdpath('data') .. '/theme.txt'
   local default_theme = 'miniwinter'
   
