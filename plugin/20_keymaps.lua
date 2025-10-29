@@ -154,6 +154,7 @@ nmap_leader('fs', '<Cmd>Pick lsp scope="workspace_symbol"<CR>', 'Symbols workspa
 nmap_leader('fS', '<Cmd>Pick lsp scope="document_symbol"<CR>',  'Symbols document')
 nmap_leader('fv', '<Cmd>Pick visit_paths cwd=""<CR>',           'Visit paths (all)')
 nmap_leader('fV', '<Cmd>Pick visit_paths<CR>',                  'Visit paths (cwd)')
+nmap_leader('ft', '<Cmd>Pick colorschemes<CR>',                 'Theme/colorscheme')
 
 -- g is for 'Git'. Common usage:
 -- - `<Leader>gs` - show information at cursor
